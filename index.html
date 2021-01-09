@@ -8,19 +8,51 @@
 </head>
 <body>
     
-    <canvas id="c"></canvas>
+    <canvas id="c" width="400px" height="400px"></canvas>
 
     <script>
-        let context = c.getContext("2d")
-        const bird = new Image()
-        bird.src = "bird2.png"
-        birdX = 0
-        birdY = 200
-        interval = 24
-
+        let context = c.getContext("2d");
+        const bird = new Image();
+        bird.src = "bird2.png";
+        let birdX = birdDY = score = bestScore = 0;
+        let birdY =pipeGap= 200;
+        let birdSize = pipeWidth = 24;
+        let canvSize = pipeX= 400;
+        let interval = 24;
+        let topPipeBottomY = 24
+        
+        c.onclick = () => {birdDY = 9}
+        
         setInterval(() => {
             context.fillStyle = "skyblue"
+            context.fillRect(0,0,canvSize,canvSize)
+            birdY -= birdDY
+            birdDY -= 0.5
+            context.drawImage(bird,birdX,birdY,birdSize * (221/168) ,birdSize)
             
+            context.fillStyle = "green"
+            pipeX -= 8
+            if(pipeX < -pipeWidth){
+                pipeX = canvSize
+                topPipeBottomY = Math.random() * pipeGap
+            }
+            context.fillRect(pipeX ,0 ,pipeWidth ,topPipeBottomY)
+            context.fillRect(pipeX ,topPipeBottomY + pipeGap , pipeWidth ,canvSize)
+
+            context.fillStyle = "black"
+            context.fillText(score++,9,25)
+            bestScore = bestScore < score ? score:bestScore
+            context.fillText(`Best:${bestScore}`,9,50)
+
+            // Check for collision
+
+            if( ((birdY < topPipeBottomY || birdY > topPipeBottomY + pipeGap) && (pipeX < birdSize * (221/168))) 
+            || birdY > canvSize ){
+                birdDY = 0;
+                birdY = 200;
+                pipeX = canvSize
+                score = 0
+            }
         },interval)
     </script>
 </body>
